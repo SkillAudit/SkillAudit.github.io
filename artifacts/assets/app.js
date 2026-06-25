@@ -1,16 +1,16 @@
-/* SkillAudit — artifacts page client */
+/* SkillAudit - artifacts page client */
 (() => {
   "use strict";
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const fmt = {
-    pct: (v) => v == null ? "—" : `${(v * 100).toFixed(0)}%`,
-    pp:  (v) => v == null ? "—" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)} pp`,
-    num: (v, d = 0) => v == null ? "—" : Number(v).toFixed(d),
-    int: (v) => v == null ? "—" : Number(v).toLocaleString("en-US"),
-    score: (v) => v == null ? "—" : Math.round(v),
-    time: (v) => v == null ? "—" : `${v.toFixed(1)}s`,
+    pct: (v) => v == null ? "-" : `${(v * 100).toFixed(0)}%`,
+    pp:  (v) => v == null ? "-" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)} pp`,
+    num: (v, d = 0) => v == null ? "-" : Number(v).toFixed(d),
+    int: (v) => v == null ? "-" : Number(v).toLocaleString("en-US"),
+    score: (v) => v == null ? "-" : Math.round(v),
+    time: (v) => v == null ? "-" : `${v.toFixed(1)}s`,
   };
 
   // ---------------------------------------------------------------------------
@@ -138,7 +138,7 @@
              aria-selected="${i === activeIdx}"
              data-skill="${esc(s.name)}">
           <span class="name">${esc(s.name)}</span>
-          <span class="meta">${esc(s.category || "—")} · ${esc(s.owner || "—")} · ${s.n_runs} runs</span>
+          <span class="meta">${esc(s.category || "-")} · ${esc(s.owner || "-")} · ${s.n_runs} runs</span>
         </div>
       `).join("");
       opts.classList.add("show");
@@ -250,7 +250,7 @@
         skill = await fetchJson(meta.file);
         state.skillCache.set(name, skill);
       } catch (e) {
-        $("#lens-view").innerHTML = `<div class="lens-empty">Failed to load ${esc(meta.file)} — ${esc(e.message)}</div>`;
+        $("#lens-view").innerHTML = `<div class="lens-empty">Failed to load ${esc(meta.file)} - ${esc(e.message)}</div>`;
         return;
       }
     }
@@ -287,8 +287,8 @@
           <span class="name">${esc(skill.skill_name)}</span>
         </div>
         <div class="meta">
-          <span class="pill">category <b>${esc(skill.category || "—")}</b></span>
-          <span class="pill">owner <b>${esc(skill.owner || "—")}</b></span>
+          <span class="pill">category <b>${esc(skill.category || "-")}</b></span>
+          <span class="pill">owner <b>${esc(skill.owner || "-")}</b></span>
           <span class="pill">runs <b>${runEntries.length}</b></span>
         </div>
       </div>
@@ -304,32 +304,19 @@
 
     let body = "";
     if (u) {
+      const total = u.total_items || 0;
+      const woPct = total ? Math.round((u.wo_passed || 0) / total * 100) : 0;
+      const wiPct = total ? Math.round((u.wi_passed || 0) / total * 100) : 0;
       const tone = (u.pass_rate_gain ?? 0) > 0.05 ? "good"
                  : (u.pass_rate_gain ?? 0) < -0.05 ? "bad"
                  : "neutral";
       body += `
-        <div class="metrics">
-          <div class="metric tone-${tone}">
-            <span class="lab">pass-rate gain</span>
-            <span class="val">${fmt.pp(u.pass_rate_gain)}</span>
-            <span class="sub">${fmt.int(u.wi_passed)}/${fmt.int(u.total_items)} wi · ${fmt.int(u.wo_passed)}/${fmt.int(u.total_items)} wo</span>
-          </div>
-          <div class="metric tone-neutral">
-            <span class="lab">efficiency</span>
-            <span class="val">${u.efficiency_score == null ? "—" : fmt.num(u.efficiency_score, 2)}</span>
-            <span class="sub">${u.valid_scenarios ?? 0} valid · ${u.invalid_scenarios ?? 0} invalid</span>
-          </div>
-          <div class="metric tone-neutral">
-            <span class="lab">wi time</span>
-            <span class="val">${fmt.time(u.wi_time)}</span>
-            <span class="sub">avg over ${u.valid_scenarios ?? 0} scenarios</span>
-          </div>
-          <div class="metric tone-neutral">
-            <span class="lab">wo time</span>
-            <span class="val">${fmt.time(u.wo_time)}</span>
-            <span class="sub">no-skill baseline</span>
-          </div>
+        <div class="rc-chart">
+          <div class="rc-bar"><span class="k">without</span><span class="track"><i style="width:${woPct}%"></i></span><b>${woPct}%</b></div>
+          <div class="rc-bar"><span class="k">with skill</span><span class="track wi"><i style="width:${wiPct}%"></i></span><b>${wiPct}%</b></div>
+          <div class="rc-gain tone-${tone}"><b>${fmt.pp(u.pass_rate_gain)}</b><span>gain · ${fmt.int(u.wi_passed)}/${fmt.int(total)} vs ${fmt.int(u.wo_passed)}/${fmt.int(total)} passed</span></div>
         </div>
+        <div class="rc-sub">efficiency ${u.efficiency_score == null ? "n/a" : fmt.num(u.efficiency_score, 2)} · ${fmt.time(u.wi_time)} with / ${fmt.time(u.wo_time)} without</div>
       `;
     }
     const sBs = s ? (s.by_severity || {}) : {};
@@ -341,26 +328,19 @@
                  : "bad";
       const bs = sBs;
       const totalFindings = sTotalFindings;
+      const score = s.score == null ? 0 : Math.round(s.score);
+      const dots = ["H", "M", "L"].map(k => (bs[k] || 0) ? `<span class="fd fd-${k}">${bs[k]} ${k}</span>` : "").join("");
       body += `
-        <div class="metrics" style="margin-top:${u ? "10px" : "0"};">
-          <div class="metric tone-${tone}">
-            <span class="lab">security score</span>
-            <span class="val">${fmt.score(s.score)} <span class="sub" style="display:inline">/ 100</span></span>
-            <span class="sub">−${fmt.num(s.total_deduction, 1)} total deduction</span>
-          </div>
-          <div class="metric tone-neutral">
-            <span class="lab">findings (H / M / L)</span>
-            <span class="val">${bs.H ?? 0} / ${bs.M ?? 0} / ${bs.L ?? 0}</span>
-            <span class="sub">${esc(s.overall_severity || "—")} overall · ${s.dynamic?.total ?? 0} dynamic tests</span>
-          </div>
+        <div class="rc-chart" style="margin-top:${u ? "12px" : "0"};">
+          <div class="rc-bar"><span class="k">security</span><span class="track"><i class="tone-${tone}" style="width:${score}%"></i></span><b>${score}/100</b></div>
+          <div class="rc-find">${totalFindings === 0
+            ? `<span class="fd clean">No findings</span>`
+            : `${dots} <span class="fdl">flagged · ${s.dynamic?.total ?? 0} dynamic tests</span>`}</div>
         </div>
-        ${totalFindings === 0
-          ? `<span class="findings-tag clean">⏵ No findings</span>`
-          : `<span class="findings-tag dirty">⏵ ${totalFindings} finding${totalFindings===1?"":"s"} flagged</span>`}
       `;
     }
     if (!u && !sHasData) {
-      body = `<div style="color:var(--fg-4); font-family:var(--font-mono); font-size:12px;">No measurements in this run.</div>`;
+      body = `<div class="rc-none">No measurements in this run.</div>`;
     }
 
     const axisLabel = meta.axis === "both" ? "utility + security" : meta.axis;
@@ -385,7 +365,7 @@
     const runsWithDetails = Object.entries(skill.runs).filter(([, r]) => r.utility_details);
     if (!runsWithDetails.length) {
       root.dataset.state = "empty";
-      root.innerHTML = `<div class="task-empty">No utility task data for "${esc(skill.skill_name)}" — only security runs evaluated this skill.</div>`;
+      root.innerHTML = `<div class="task-empty">No utility task data for "${esc(skill.skill_name)}" - only security runs evaluated this skill.</div>`;
       return;
     }
 
@@ -425,7 +405,9 @@
     const wi = scn.wi_passed_items ?? 0;
     const wo = scn.wo_passed_items ?? 0;
     const delta = wi - wo;
-    const tag = delta > 0 ? `<span class="delta-tag gain">+${delta} new pass${delta===1?"":"es"}</span>`
+    const woPct = total ? Math.round(wo / total * 100) : 0;
+    const wiPct = total ? Math.round(wi / total * 100) : 0;
+    const tag = delta > 0 ? `<span class="delta-tag gain">+${delta} fixed</span>`
               : delta === 0 ? `<span class="delta-tag tied">no change</span>`
               : `<span class="delta-tag loss">${delta} regression${delta===-1?"":"s"}</span>`;
     const items = (scn.items || []).map(it => renderJudgeItem(it)).join("");
@@ -433,10 +415,13 @@
       <div class="scenario-block">
         <div class="scenario-block-head">
           <span class="id">${esc(scn.scenario_id || "U?")}</span>
+          <div class="scn-bars">
+            <div class="scn-bar"><span class="k">without</span><span class="track"><i style="width:${woPct}%"></i></span><b>${wo}/${total}</b></div>
+            <div class="scn-bar"><span class="k">with skill</span><span class="track wi"><i style="width:${wiPct}%"></i></span><b>${wi}/${total}</b></div>
+          </div>
           ${tag}
-          <span>${wi}/${total} wi · ${wo}/${total} wo</span>
         </div>
-        <ul class="judge-list">${items}</ul>
+        <div class="judge-list">${items}</div>
       </div>
     `;
   }
@@ -444,27 +429,30 @@
   function renderJudgeItem(it) {
     const wiPass = it.wi_score === 1;
     const woPass = it.wo_score === 1;
+    const changed = wiPass !== woPass;
+    const dot = (pass, muted) => `<span class="jdot ${muted ? "mut" : (pass ? "pass" : "fail")}">${pass ? "✓" : "✗"}</span>`;
+    const label = !changed ? (wiPass ? "kept" : "fails") : (wiPass ? "fixed" : "regression");
+    const labelCls = !changed ? "mut" : (wiPass ? "gain" : "loss");
     return `
-      <li class="judge-item">
-        <span class="jid">${esc(it.item_id || "")}</span>
-        <span class="crit">${esc(it.criterion || "")}</span>
-        <div class="scores">
-          <div class="judge-side wi">
-            <div class="lab">
-              wi_skills
-              <span class="badge ${wiPass ? "pass" : "fail"}">${wiPass ? "PASS" : "FAIL"}</span>
-            </div>
-            <div class="reason">${esc(it.wi_reason || "")}</div>
+      <details class="ji">
+        <summary class="ji-row">
+          <span class="jid">${esc(it.item_id || "")}</span>
+          <span class="ji-trans">${dot(woPass, !changed)}<span class="ji-arrow">→</span>${dot(wiPass, !changed)}</span>
+          <span class="ji-crit">${esc(it.criterion || "")}</span>
+          <span class="ji-tag ${labelCls}">${label}</span>
+          <span class="ji-chev"></span>
+        </summary>
+        <div class="ji-detail">
+          <div class="ji-side">
+            <div class="ji-side-h">with skill <span class="ji-badge ${wiPass ? "pass" : "fail"}">${wiPass ? "pass" : "fail"}</span></div>
+            <div class="ji-reason">${esc(it.wi_reason || "")}</div>
           </div>
-          <div class="judge-side wo">
-            <div class="lab">
-              wo_skills (baseline)
-              <span class="badge ${woPass ? "pass" : "fail"}">${woPass ? "PASS" : "FAIL"}</span>
-            </div>
-            <div class="reason">${esc(it.wo_reason || "")}</div>
+          <div class="ji-side">
+            <div class="ji-side-h">without <span class="ji-badge ${woPass ? "pass" : "fail"}">${woPass ? "pass" : "fail"}</span></div>
+            <div class="ji-reason">${esc(it.wo_reason || "")}</div>
           </div>
         </div>
-      </li>
+      </details>
     `;
   }
 

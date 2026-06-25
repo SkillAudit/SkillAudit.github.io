@@ -3,30 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SkillAudit — Artifacts</title>
+  <title>SkillAudit: Artifacts</title>
   <meta name="description" content="SkillAudit artifacts: open data, evaluation reports, and constructed task suites for 227 audited agent skills.">
   <meta name="robots" content="index,follow">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none';">
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-  <link rel="stylesheet" href="assets/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 
 <noscript>
   <style>.noscript-fallback{padding:24px;border:1px solid #F59E0B;background:rgba(245,158,11,0.08);color:#F2F4F7;font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;border-radius:6px;line-height:1.55} .noscript-fallback a{color:#22C55E;text-decoration:underline}</style>
   <div class="noscript-fallback">
-    <strong style="color:#F59E0B">// JavaScript required</strong> for the interactive skill explorer.
+    <strong style="color:#F59E0B">JavaScript required</strong> for the interactive skill explorer.
     The underlying data is plain JSON / CSV and is fully usable without the page:
     <ul>
-      <li><a href="data/index.json">data/index.json</a> — 227 skills × 8 runs index (~36 KB)</li>
-      <li><a href="data/stats.json">data/stats.json</a> — aggregate statistics</li>
-      <li><a href="data/aggregate.csv">data/aggregate.csv</a> — long-format CSV (1812 rows × 28 cols)</li>
-      <li><a href="data/checksums.txt">data/checksums.txt</a> — SHA-256 manifest for all 229 artifact files</li>
-      <li><a href="data/skills/">data/skills/</a> — per-skill detail JSON files</li>
+      <li><a href="data/index.json">data/index.json</a> · 227 skills × 8 runs index (~36 KB)</li>
+      <li><a href="data/stats.json">data/stats.json</a> · aggregate statistics</li>
+      <li><a href="data/aggregate.csv">data/aggregate.csv</a> · long-format CSV (1812 rows × 28 cols)</li>
+      <li><a href="data/checksums.txt">data/checksums.txt</a> · SHA-256 manifest for all 229 artifact files</li>
+      <li><a href="data/skills/">data/skills/</a> · per-skill detail JSON files</li>
     </ul>
   </div>
 </noscript>
@@ -59,14 +56,13 @@
     <span class="brand-word">
       <strong>Skill<em>Audit</em></strong>
     </span>
-    <span class="brand-meta"><b>// artifacts</b></span>
+    <span class="brand-meta">Artifacts</span>
   </a>
   <nav class="topnav" aria-label="Section navigation">
-    <a href="../">← Main site</a>
+    <a class="cta" href="../">← Main site</a>
     <a href="#runs">Runs</a>
     <a href="#explorer">Skill explorer</a>
     <a href="#tasks">Tasks</a>
-    <a href="#traces">Traces</a>
     <a href="#cite">Cite</a>
   </nav>
 </header>
@@ -80,9 +76,7 @@
     <h1>Every report. Every <em>task</em>. Every run.</h1>
 
     <p class="hero-sub">
-      Browse the full evaluation surface that produced the SkillAudit paper: per-skill safety and
-      effectiveness results across eight harness × model runs, the constructed judge-item task
-      suite, and (soon) replayable execution traces.
+      Look up any audited skill to see its safety and effectiveness across every run, plus the open dataset behind the paper.
     </p>
 
     <div class="lookup-wrap">
@@ -113,24 +107,20 @@
     </div>
 
     <p class="hero-mini-stats">
-      <span><strong id="m-skills">—</strong> skills</span>
+      <span><strong id="m-skills">·</strong> skills</span>
       <span class="sep">·</span>
-      <span><strong id="m-reports">—</strong> reports</span>
+      <span><strong id="m-reports">·</strong> reports</span>
       <span class="sep">·</span>
-      <span><strong id="m-runs">—</strong> runs</span>
+      <span><strong id="m-runs">·</strong> runs</span>
       <span class="sep">·</span>
-      <span><strong id="m-cats">—</strong> categories</span>
+      <span><strong id="m-cats">·</strong> categories</span>
       <span class="sep">·</span>
-      <span><strong id="m-judge">—</strong> judge items</span>
+      <span><strong id="m-judge">·</strong> judge items</span>
     </p>
 
     <div class="banner-anonymous">
-      <strong>// Privacy notice.</strong>
-      Most owner fields show the upstream GitHub identity verbatim, since the
-      underlying SKILL.md files are themselves public. A small set of entries
-      whose skill name is also redacted (<code>anon-skill-NNN</code>) keeps an
-      <code>anon-NNN</code> owner token to preserve that privacy boundary.
-      Internal pipeline paths are redacted; behavioral evidence is preserved.
+      <strong>Privacy notice.</strong>
+      Owner fields show the public upstream GitHub identity. Fully-redacted skills (<code>anon-skill-NNN</code>) carry an <code>anon-NNN</code> token; internal paths are redacted, behavioral evidence kept.
     </div>
   </section>
 
@@ -148,9 +138,7 @@
       <span class="section-label">eight runs</span>
       <h2>Evaluation surface across harnesses and models.</h2>
       <p class="lead">
-        Each row is a single run: one harness driving one model along one axis (utility, security, or
-        both). Each column is the same set of 226–227 skills. Cells link to that run's per-skill
-        results.
+        Eight runs, each a harness driving a model along one axis (utility, security, or both), over the same ~227 skills.
       </p>
     </header>
     <div class="run-matrix" id="run-matrix" aria-busy="true"></div>
@@ -162,44 +150,12 @@
       <span class="section-label">constructed task data</span>
       <h2>How a skill becomes a task suite.</h2>
       <p class="lead">
-        Every skill is exercised by three capability-targeted scenarios — <code>U1</code>,
-        <code>U2</code>, <code>U3</code> — each with 5–6 binary judge items. Pick a skill in the
-        explorer above, then expand the panel below to see the full judge sheet that scored it.
+        Each skill runs three scenarios (<code>U1</code> <code>U2</code> <code>U3</code>), about 5-6 binary judge items each. Open a skill to see its judge sheet.
       </p>
     </header>
     <div id="task-view" class="task-view" data-state="empty"
          aria-live="polite" aria-label="Constructed judge sheet for selected skill">
       <div class="task-empty">No skill selected. The judge sheet for whichever skill you open will appear here.</div>
-    </div>
-  </section>
-
-  <!-- ==================== TRACES (placeholder) ==================== -->
-  <section id="traces" class="reveal">
-    <header class="section-head">
-      <span class="section-label">execution traces</span>
-      <h2>Replayable traces — coming soon.</h2>
-      <p class="lead">
-        Per-scenario sandbox traces (file-system diff, outbound network log, agent step log) will
-        be added to this repository before the camera-ready version. Each entry below will become
-        a clickable timeline.
-      </p>
-    </header>
-    <div class="trace-placeholder">
-      <div class="trace-row is-pending">
-        <span class="lab">U1 / wi_skills</span>
-        <span class="status">pending upload</span>
-        <span class="meta">fs.diff · net.log · steps.jsonl</span>
-      </div>
-      <div class="trace-row is-pending">
-        <span class="lab">U1 / wo_skills</span>
-        <span class="status">pending upload</span>
-        <span class="meta">fs.diff · net.log · steps.jsonl</span>
-      </div>
-      <div class="trace-row is-pending">
-        <span class="lab">U2 · U3 · security</span>
-        <span class="status">pending upload</span>
-        <span class="meta">paired wi / wo · matched seeds</span>
-      </div>
     </div>
   </section>
 
@@ -218,13 +174,12 @@
         <div class="cite-row">
           <div class="cite-card">
             <h4>BibTeX</h4>
-<!-- FIXME: replace {SkillAudit Contributors} with the real author list and fill in the arXiv eprint ID after submission -->
 <pre id="bibtex">@misc{skillaudit2026,
-  title         = {SkillAudit: From Task-First Evaluation to
-                   Skill-Centered Assessment of Agent Skill Packages},
+  title         = {SkillAudit: From Fixed-Suite Benchmarking to
+                   Skill-Centered Assessment},
   author        = {SkillAudit Contributors},
   year          = {2026},
-  eprint        = {TBD},
+  eprint        = {2606.22613},
   archivePrefix = {arXiv},
   primaryClass  = {cs.AI},
   note          = {Project page: \url{https://skillaudit.github.io/}}
@@ -276,7 +231,6 @@
         <li><a href="#explorer">Skill explorer</a></li>
         <li><a href="#runs">Run matrix</a></li>
         <li><a href="#tasks">Task suite</a></li>
-        <li><a href="#traces">Traces</a></li>
       </ul>
     </div>
     <div>
@@ -290,12 +244,12 @@
     </div>
   </div>
   <div class="foot-bot">
-    <span>// SkillAudit artifacts · open-source build · 2026</span>
-    <span>// 227 skills · 8 runs · frozen 2026-05-07</span>
+    <span>SkillAudit artifacts · open-source build · 2026</span>
+    <span>227 skills · 8 runs · frozen 2026-05-07</span>
   </div>
 </footer>
 
-<script src="assets/app.js" defer></script>
+<script src="assets/app.js?v=4" defer></script>
 
 </body>
 </html>

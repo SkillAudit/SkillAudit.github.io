@@ -369,6 +369,25 @@ footer ul a{color:var(--fg-3);font-size:13.5px}
 .kicker{display:flex;align-items:center;gap:12px;margin-bottom:18px}
 .kicker .no{font-family:var(--mono);font-size:12px;font-weight:700;color:#1b1508;padding:3px 9px;border-radius:6px;background:linear-gradient(135deg,#E2D2AC,#C7B594)}
 .kicker .lb{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-2)}
+/* demo video */
+.demo-sec{padding-top:6px}
+.demo-stage{margin-top:30px}
+.demo-player{position:relative;aspect-ratio:16/9;width:100%;max-width:1040px;margin:0 auto;
+  border:1px solid var(--gold-ln);border-radius:var(--r-card);overflow:hidden;background:#05070A;
+  box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.demo-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:#05070A}
+.demo-cover{position:absolute;inset:0;width:100%;height:100%;border:0;cursor:pointer;font-family:var(--sans);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:radial-gradient(120% 120% at 50% 36%,rgba(200,182,151,.14),transparent 60%),linear-gradient(180deg,#0B0E12,#07090C);
+  transition:opacity .35s ease}
+.demo-player.playing .demo-cover{opacity:0;pointer-events:none}
+.demo-play{display:grid;place-items:center;width:74px;height:74px;border-radius:var(--r-pill);color:#1b1508;
+  background:linear-gradient(135deg,#E2D2AC,#C7B594 60%,#AE976F);box-shadow:0 12px 36px rgba(200,182,151,.34);
+  padding-left:4px;transition:transform .2s}
+.demo-cover:hover .demo-play{transform:scale(1.06)}
+.demo-cap{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.demo-cap b{font-size:16px;color:var(--fg);font-weight:600}
+.demo-cap span{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-2)}
 
 /* reveal + stagger */
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
@@ -497,6 +516,26 @@ footer ul a{color:var(--fg-3);font-size:13.5px}
     <div class="stat"><div class="n" data-to="4256">0</div><div class="l">independent judge items</div></div>
   </div>
 </div>
+
+<!-- DEMO -->
+<section id="demo" class="demo-sec">
+  <div class="wrap">
+    <div class="kicker reveal"><span class="lb">See it in action</span></div>
+    <h2 class="reveal">See SkillAudit in action.</h2>
+    <p class="lead reveal" style="margin-top:14px">A 17-second walkthrough, from picking a skill to reading its safety and utility verdict.</p>
+    <div class="demo-stage reveal">
+      <div class="demo-player" id="demoPlayer">
+        <video id="demoVid" class="demo-vid" preload="none" playsinline controls width="2560" height="1440" aria-label="SkillAudit demo walkthrough">
+          <source src="assets/demo.mp4" type="video/mp4">
+        </video>
+        <button class="demo-cover" id="demoCover" type="button" aria-label="Play the demo walkthrough">
+          <span class="demo-play"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span>
+          <span class="demo-cap"><b>Play the walkthrough</b><span>17-second product demo</span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- FOUR AXES (bento) -->
 <section id="axes">
@@ -979,6 +1018,20 @@ footer ul a{color:var(--fg-3);font-size:13.5px}
       .then(function(r){ return r.ok?r.json():null; })
       .then(function(d){ if(d&&d.skills) skills=d.skills; if(document.activeElement===input&&input.value.trim()) deb(); })
       .catch(function(){});
+  })();
+
+  /* ---- demo video: click to load (mp4 is deferred via preload=none until intent) ---- */
+  (function(){
+    var cover=document.getElementById('demoCover');
+    var player=document.getElementById('demoPlayer');
+    var vid=document.getElementById('demoVid');
+    if(!cover||!player||!vid) return;
+    cover.addEventListener('click',function(){
+      player.classList.add('playing');
+      var p=vid.play();
+      if(p&&p.catch) p.catch(function(){});
+      setTimeout(function(){ cover.style.display='none'; },420); // remove after the fade, paint-independent
+    });
   })();
 
   /* ---- copy bibtex ---- */

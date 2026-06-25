@@ -573,7 +573,7 @@ footer ul a{color:var(--fg-3);font-size:13.5px}
   <div class="wrap">
     <div class="kicker reveal"><span class="no">03</span><span class="lb">Capability by domain</span></div>
     <h2 class="reveal">What skills add, domain by domain.</h2>
-    <p class="lead reveal" style="margin-top:14px">Resolution rate across nine professional-domain groups (O*NET occupation taxonomy), per model and harness. The pale fill is the lift skills add over the no-skill baseline. That lift is the whole point: skills make agents materially more capable, which is exactly why an unvetted one is worth worrying about. Hover an axis to inspect a domain; click an agent to compare up to four.</p>
+    <p class="lead reveal" style="margin-top:14px">Resolution rate across nine professional-domain groups (O*NET occupation taxonomy), per model and harness. The pale fill is the lift skills add over the no-skill baseline. That lift is the whole point: skills make agents materially more capable, which is exactly why an unvetted one is worth worrying about. Hover an axis to inspect a domain; click any agent to compare, up to four at a time.</p>
     <div class="radarwrap reveal">
       <div class="radar-top">
         <div class="seg" id="radar-mode">
@@ -1078,7 +1078,7 @@ void main(){
       c.innerHTML='<span class="d" style="'+(on?'background:'+a.color:'')+'"></span>'+a.model+' <span style="opacity:.6">'+a.harness+'</span>';
       c.addEventListener('click',function(){
         var k=sel.indexOf(i);
-        if(k>=0){ if(sel.length>1) sel.splice(k,1); } else { if(sel.length<4) sel.push(i); }
+        if(k>=0){ if(sel.length>1) sel.splice(k,1); } else { if(sel.length>=4) sel.shift(); sel.push(i); }
         renderChips(); renderRadar(); renderSide();
       });
       box.appendChild(c);

@@ -222,9 +222,28 @@
   // Hash-based deep linking
   // ---------------------------------------------------------------------------
   function handleHash() {
-    const m = location.hash.match(/^#skill=([^&]+)/);
-    if (m) {
-      selectSkill(decodeURIComponent(m[1]));
+    const skillMatch = location.hash.match(/^#skill=([^&]+)/);
+    if (skillMatch) {
+      selectSkill(decodeURIComponent(skillMatch[1]));
+      return;
+    }
+    const qMatch = location.hash.match(/^#q=([^&]+)/);
+    if (qMatch) {
+      const q = decodeURIComponent(qMatch[1]).trim();
+      if (!q) return;
+      const exact = state.index.skills.find(s => s.name.toLowerCase() === q.toLowerCase());
+      if (exact) {
+        selectSkill(exact.name);
+        return;
+      }
+      const input = $("#lookup-input");
+      if (input) {
+        input.value = q;
+        input.focus();
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        const form = $("#lookup-form");
+        if (form) form.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }
   }
 
